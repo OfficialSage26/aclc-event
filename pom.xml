@@ -14,7 +14,7 @@
     <name>ACLC Event Management System</name>
     <description>Event Management System for ACLC College of Ormoc</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>23</java.version>
     </properties>
     <dependencies>
         <!-- Spring Boot Starters -->
