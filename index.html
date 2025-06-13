@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACLC Event Management System</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <img src="/placeholder.svg?height=80&width=80" alt="ACLC Logo" class="logo">
+                    <h1>ACLC Event Management</h1>
+                    <p>College of Ormoc</p>
+                </div>
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                
+                <div class="demo-section">
+                    <div class="divider">
+                        <span>Demo Access</span>
+                    </div>
+                    <div class="demo-buttons">
+                        <button class="btn btn-demo" onclick="demoLogin('admin')">Admin Demo</button>
+                        <button class="btn btn-demo" onclick="demoLogin('organizer')">Organizer Demo</button>
+                        <button class="btn btn-demo" onclick="demoLogin('faculty')">Faculty Demo</button>
+                        <button class="btn btn-demo" onclick="demoLogin('student')">Student Demo</button>
+                    </div>
+                </div>
+                
+                <div id="loginError" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="page">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <img src="/placeholder.svg?height=40&width=40" alt="ACLC Logo" class="nav-logo">
+                <span>ACLC Event Management</span>
+            </div>
+            <div class="nav-user">
+                <span id="userName">Welcome, User</span>
+                <span id="userRole" class="user-role"></span>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <ul class="nav-menu">
+                    <li><a href="#" data-page="dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" data-page="events" class="nav-link"><i class="fas fa-calendar"></i> Events</a></li>
+                    <li><a href="#" data-page="calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> Calendar</a></li>
+                    <li><a href="#" data-page="attendance" class="nav-link"><i class="fas fa-check-circle"></i> Attendance</a></li>
+                    <li id="adminMenu" style="display: none;"><a href="#" data-page="users" class="nav-link"><i class="fas fa-users"></i> Users</a></li>
+                    <li id="organizerMenu" style="display: none;"><a href="#" data-page="create-event" class="nav-link"><i class="fas fa-plus"></i> Create Event</a></li>
+                    <li id="approvalMenu" style="display: none;"><a href="#" data-page="approvals" class="nav-link"><i class="fas fa-check-square"></i> Approvals</a></li>
+                    <li><a href="#" data-page="notifications" class="nav-link"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li id="analyticsMenu" style="display: none;"><a href="#" data-page="analytics" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                </ul>
+            </aside>
+
+            <main class="main-content">
+                <!-- Dashboard Content -->
+                <div id="dashboardContent" class="content-section active">
+                    <h2>Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalEvents">0</h3>
+                                <p>Total Events</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="upcomingEvents">0</h3>
+                                <p>Upcoming Events</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalAttendees">0</h3>
+                                <p>Total Attendees</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="myAttendance">0</h3>
+                                <p>My Events</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-events">
+                        <h3>Recent Events</h3>
+                        <div id="recentEventsList" class="events-list">
+                            <!-- Recent events will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events Content -->
+                <div id="eventsContent" class="content-section">
+                    <div class="content-header">
+                        <h2>Events</h2>
+                        <div class="header-actions">
+                            <select id="eventFilter" class="form-select">
+                                <option value="all">All Events</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="my-events">My Events</option>
+                            </select>
+                            <button id="createEventBtn" class="btn btn-primary" style="display: none;">
+                                <i class="fas fa-plus"></i> Create Event
+                            </button>
+                        </div>
+                    </div>
+                    <div id="eventsList" class="events-grid">
+                        <!-- Events will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Calendar Content -->
+                <div id="calendarContent" class="content-section">
+                    <h2>Event Calendar</h2>
+                    <div class="calendar-header">
+                        <button id="prevMonth" class="btn btn-secondary">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="currentMonth">January 2024</h3>
+                        <button id="nextMonth" class="btn btn-secondary">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="calendar" class="calendar-container">
+                        <!-- Calendar will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Attendance Content -->
+                <div id="attendanceContent" class="content-section">
+                    <h2>Attendance Tracking</h2>
+                    <div class="attendance-header">
+                        <div class="attendance-controls">
+                            <select id="attendanceEventSelect" class="form-select">
+                                <option value="">Select Event</option>
+                            </select>
+                            <button id="scanQRBtn" class="btn btn-primary">
+                                <i class="fas fa-qrcode"></i> Scan QR Code
+                            </button>
+                            <button id="manualCheckInBtn" class="btn btn-secondary">
+                                <i class="fas fa-user-check"></i> Manual Check-in
+                            </button>
+                            <button id="exportAttendanceBtn" class="btn btn-outline">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="attendance-stats">
+                        <div class="stat-card">
+                            <h4>Present</h4>
+                            <span id="presentCount">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Registered</h4>
+                            <span id="registeredCount">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Attendance Rate</h4>
+                            <span id="attendanceRate">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div id="attendanceList" class="attendance-table">
+                        <!-- Attendance records will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Create Event Content -->
+                <div id="createEventContent" class="content-section">
+                    <h2>Create New Event</h2>
+                    <form id="createEventForm" class="event-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventTitle">Event Title *</label>
+                                <input type="text" id="eventTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventCategory">Category *</label>
+                                <select id="eventCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="ACADEMIC">Academic</option>
+                                    <option value="CAREER">Career</option>
+                                    <option value="SOCIAL">Social</option>
+                                    <option value="SPORTS">Sports</option>
+                                    <option value="ORIENTATION">Orientation</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDescription">Description *</label>
+                            <textarea id="eventDescription" name="description" rows="4" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventDate">Date *</label>
+                                <input type="date" id="eventDate" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventTime">Time *</label>
+                                <input type="time" id="eventTime" name="time" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventLocation">Location *</label>
+                                <input type="text" id="eventLocation" name="location" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventCapacity">Capacity *</label>
+                                <input type="number" id="eventCapacity" name="capacity" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventBudget">Budget (₱)</label>
+                            <input type="number" id="eventBudget" name="budget" min="0" step="0.01">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Create Event</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Approvals Content -->
+                <div id="approvalsContent" class="content-section">
+                    <h2>Event Approvals</h2>
+                    <div class="approval-stats">
+                        <div class="stat-card">
+                            <h4>Pending</h4>
+                            <span id="pendingApprovals">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Approved</h4>
+                            <span id="approvedCount">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Rejected</h4>
+                            <span id="rejectedCount">0</span>
+                        </div>
+                    </div>
+                    <div id="approvalsList" class="approvals-list">
+                        <!-- Approval items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Users Management -->
+                <div id="usersContent" class="content-section">
+                    <div class="content-header">
+                        <h2>User Management</h2>
+                        <button id="addUserBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add User
+                        </button>
+                    </div>
+                    <div class="users-filters">
+                        <select id="roleFilter" class="form-select">
+                            <option value="">All Roles</option>
+                            <option value="ADMIN">Admin</option>
+                            <option value="ORGANIZER">Organizer</option>
+                            <option value="FACULTY">Faculty</option>
+                            <option value="STUDENT">Student</option>
+                        </select>
+                        <input type="text" id="userSearch" class="form-input" placeholder="Search users...">
+                    </div>
+                    <div id="usersTable" class="users-table">
+                        <!-- Users table will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Notifications Content -->
+                <div id="notificationsContent" class="content-section">
+                    <div class="content-header">
+                        <h2>Notifications</h2>
+                        <button id="markAllReadBtn" class="btn btn-secondary">Mark All Read</button>
+                    </div>
+                    <div class="notification-stats">
+                        <div class="stat-card">
+                            <h4>Unread</h4>
+                            <span id="unreadCount">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Action Required</h4>
+                            <span id="actionRequiredCount">0</span>
+                        </div>
+                    </div>
+                    <div id="notificationsList" class="notifications-list">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Analytics Content -->
+                <div id="analyticsContent" class="content-section">
+                    <h2>Analytics Dashboard</h2>
+                    <div class="analytics-stats">
+                        <div class="stat-card">
+                            <h4>Total Events</h4>
+                            <span id="analyticsEvents">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Total Attendance</h4>
+                            <span id="analyticsAttendance">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Avg Attendance Rate</h4>
+                            <span id="analyticsRate">0%</span>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Active Users</h4>
+                            <span id="analyticsUsers">0</span>
+                        </div>
+                    </div>
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h3>Monthly Events</h3>
+                            <canvas id="monthlyChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Event Categories</h3>
+                            <canvas id="categoryChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalEventTitle">Event Details</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalEventBody">
+                <!-- Event details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button id="registerEventBtn" class="btn btn-primary" style="display: none;">Register</button>
+                <button id="approveEventBtn" class="btn btn-success" style="display: none;">Approve</button>
+                <button id="rejectEventBtn" class="btn btn-danger" style="display: none;">Reject</button>
+                <button id="generateQRBtn" class="btn btn-secondary" style="display: none;">Generate QR</button>
+                <button class="btn btn-secondary close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>QR Code</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="qrCodeContainer" class="qr-container">
+                    <!-- QR code will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Add User</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="userName">Name *</label>
+                        <input type="text" id="userName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Email *</label>
+                        <input type="email" id="userEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Password *</label>
+                        <input type="password" id="userPassword" name="password" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userRole">Role *</label>
+                            <select id="userRole" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="ORGANIZER">Organizer</option>
+                                <option value="FACULTY">Faculty</option>
+                                <option value="STUDENT">Student</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="userDepartment">Department</label>
+                            <input type="text" id="userDepartment" name="department">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userStudentId">Student ID</label>
+                        <input type="text" id="userStudentId" name="studentId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="saveUserBtn" class="btn btn-primary">Save</button>
+                <button class="btn btn-secondary close-modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/attendance.js"></script>
+    <script src="js/users.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
